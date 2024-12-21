@@ -39,7 +39,7 @@ connect();
 
 app.use(cors({
 
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: 'https://frontend-drug.vercel.app',
     credentials: true
 }))
 // Cấu hình thư mục tĩnh cho các file trong 'uploads'
