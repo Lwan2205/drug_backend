@@ -111,12 +111,14 @@ const loginUser = async (req, res) => {
         // So sánh mật khẩu
         if (user && (await bcrypt.compare(password, user.password))) {
             const token = generateToken(user._id);
-
+            const isProduction = process.env.NODE_ENV === 'production';
             res.cookie('token', token, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'None',
+                secure: isProduction, // true nếu production, false nếu dev
+                sameSite: isProduction ? 'None' : 'Lax', // None nếu production, Lax nếu dev
                 maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+                path: '/',
+                // domain: isProduction ? '.yourdomain.com' : undefined, // tuỳ chỉnh nếu dùng subdomain
             });
 
             res.status(200).json({
@@ -137,13 +139,15 @@ const loginUser = async (req, res) => {
 
 // Đăng xuất người dùng
 const logoutUser = (req, res) => {
+    // Xác định cấu hình cookie phù hợp với môi trường
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('token', '', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // hoặc true nếu luôn dùng HTTPS
-        sameSite: 'None', // nếu frontend/backend khác domain
+        secure: isProduction, // true nếu production, false nếu dev
+        sameSite: isProduction ? 'None' : 'Lax', // None nếu production, Lax nếu dev
         expires: new Date(0),
-        // path: '/', // nên thêm path
-        // // domain: '.yourdomain.com', // nếu dùng subdomain, thêm dòng này
+        path: '/',
+        // domain: isProduction ? '.yourdomain.com' : undefined, // tuỳ chỉnh nếu dùng subdomain
     });
 
     res.status(200).json({
