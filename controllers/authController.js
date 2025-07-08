@@ -118,7 +118,7 @@ const loginUser = async (req, res) => {
                 sameSite: isProduction ? 'None' : 'Lax', // None nếu production, Lax nếu dev
                 maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
                 path: '/',
-                // domain: isProduction ? '.yourdomain.com' : undefined, // tuỳ chỉnh nếu dùng subdomain
+                domain: isProduction ? '.onrender.com' : undefined, // Đảm bảo cookie hợp lệ trên mọi subdomain
             });
 
             res.status(200).json({
