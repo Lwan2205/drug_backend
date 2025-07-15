@@ -111,14 +111,12 @@ const loginUser = async (req, res) => {
         // So sánh mật khẩu
         if (user && (await bcrypt.compare(password, user.password))) {
             const token = generateToken(user._id);
-            const isProduction = process.env.NODE_ENV === 'production';
+
             res.cookie('token', token, {
                 httpOnly: true,
-                secure: isProduction, // true nếu production, false nếu dev
-                sameSite: isProduction ? 'None' : 'Lax', // None nếu production, Lax nếu dev
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'None',
                 maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-                path: '/',
-                domain: isProduction ? '.onrender.com' : undefined, // Đảm bảo cookie hợp lệ trên mọi subdomain
             });
 
             res.status(200).json({
